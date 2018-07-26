@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yidu.d257.dao.base.PickStandardDao">
+
+	<sql id="pickStandardSQL">
+		select * from t_pick_standard
+	</sql>
+	
+	<sql id="pageQeurySQL">
+		order by minWeight limit #{start},#{end}
+	</sql>
+	
+	<select id="countPickStandard" resultType="int">
+		select count(*) from t_pick_standard
+	</select>
+	
+	<select id="findAllPickStandardWithPage" resultType="pickStandard">
+		<include refid="pickStandardSQL"/> 
+		<include refid="pageQeurySQL"/> 
+	</select>
+	
+	<select id="findAllPSNameAndPSIdWithUseable" resultType="pickStandard">
+		select pickStandardName,pickStandardId from t_pick_standard where useable = 'Y' order by minWeight
+	</select>
+	
+</mapper>

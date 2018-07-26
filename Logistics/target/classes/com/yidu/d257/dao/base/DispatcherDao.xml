@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yidu.d257.dao.base.DispatcherDao">
+
+	<sql id="dispatcherSQL">
+		select * from t_dispatcher
+	</sql>
+	
+	<sql id="countDispathcer">
+		select count(*) from t_dispatcher
+	</sql>
+	
+	<sql id="pageQeurySQL">
+		order by organizationName limit #{start},#{end}
+	</sql>
+
+	<!-- SQL片段:多条件组合查询 -->
+	<sql id="criteriasSQL">
+		<if test="dispatcherNo!=null and dispatcherNo!=''">
+			and dispatcherNo like '%${dispatcherNo}%'
+		</if>
+		<if test="dispatcherName!=null and dispatcherName!=''">
+			and dispatcherName like '%${dispatcherName}%'
+		</if>
+		<if test="phoneNumber!=null and phoneNumber!=''" >
+			and phoneNumber like '%${phoneNumber}%'
+		</if>
+		<if test="dispatcherType!=null and dispatcherType!=''">
+			and dispatcherType like '%${dispatcherType}%'
+		</if>
+		<if test="usePDA!=null and usePDA!=''">
+			and usePDA like #{usePDA}
+		</if>
+		<if test="checkPwd!=null and checkPwd!=''">
+			and checkPwd like '%${checkPwd}%'
+		</if>
+		<if test="pickStandardName!=null and pickStandardName!=''">
+			and pickStandardName like '%${pickStandardName}%'
+		</if>
+		<if test="busType!=null and busType!=''">
+			and busType like '%${busType}%'
+		</if>
+		<if test="busNumber!=null and busNumber!=''">
+			and busNumber like '%${busNumber}%'
+		</if>
+		<if test="organizationName!=null and organizationName!=''">
+			and organizationName like '%${organizationName}%'
+		</if>
+		<if test="useable!=null and useable!=''">
+			and useable like '%${useable}%'
+		</if>
+	</sql>
+
+	<select id="findAllDispatcher" resultType="Dispatcher">
+		<include refid="dispatcherSQL"/>
+	</select>
+	
+	<select id="pageQueryDispatcher" parameterType="hashMap" resultType="Dispatcher">
+		<include refid="dispatcherSQL"/> 
+		<include refid="pageQeurySQL"/>
+	</select>
+	
+	<select id="countDispatcher" resultType="int">
+		select count(*) from t_dispatcher
+	</select>
+	
+	<select id="findDispatcherByCriteriaWithPage" parameterType="dispatcherOV" resultType="Dispatcher">
+		<include refid="dispatcherSQL"/>
+		<where>
+			<include refid="criteriasSQL"/>
+		</where>
+		<include refid="pageQeurySQL"/>
+	</select>
+	
+	<select id="countDispatcherByCriteriaWithPage" parameterType="dispatcherOV" resultType="int">
+		<include refid="countDispathcer"/>
+		<where>
+			<include refid="criteriasSQL"/>
+		</where>
+	</select>
+	
+	<insert id="addDispatcher" parameterType="dispatcher">
+		INSERT INTO t_dispatcher(dispatcherId,dispatcherNo,dispatcherName,phoneNumber,dispatcherTypeId,dispatcherType,usePDA,checkPwd,pickStandardId,pickStandardName,busType,busNumber,organizationId,organizationName,useable) 
+		VALUES(#{dispatcherId},#{dispatcherNo},#{dispatcherName},#{phoneNumber},#{dispatcherTypeId},#{dispatcherType},#{usePDA},#{checkPwd},#{pickStandardId},#{pickStandardName},#{busType},#{busNumber},#{organizationId},#{organizationName},#{useable});
+	</insert>
+	
+	<delete id="deleteDispatcher" parameterType="string">
+		delete from t_dispatcher where dispatcherId = #{dispatcherId}
+	</delete>
+	 
+	<update id="freezeOrActivateDispatcher" parameterType="hashMap">
+		update t_dispatcher set useable = #{useable} where dispatcherId = #{dispatcherId}
+	</update>
+	
+	<select id="existDispatcherByDispatcherNo" parameterType="string" resultType="int">
+		select count(*) from t_dispatcher where dispatcherNo = #{dispatcherNo}
+	</select>
+	
+	<select id="existDispatcherByPhoneNumber" parameterType="string" resultType="int">
+		select count(*) from t_dispatcher where phoneNumber = #{phoneNumber}
+	</select>
+	
+	<select id="existDispatcherByBusNumber" parameterType="string" resultType="int">
+		select count(*) from t_dispatcher where busNumber = #{busNumber}
+	</select>
+	
+	<select id="findDispatcherNameByDispatcherNo" parameterType="string" resultType="string">
+		select dispatcherName from t_dispatcher where dispatcherNo = #{dispatcherNo}
+	</select>
+	
+	<select id="findDispatcherByDispatcherNo" parameterType="string" resultType="dispatcher">
+		select * from t_dispatcher where dispatcherNo = #{dispatcherNo}
+	</select>
+	
+	<select id="findOrganizationNameByDispatcherNo" parameterType="string" resultType="string">
+		select organizationName from t_dispatcher where dispatcherNo = #{dispatcherNo}
+	</select>
+	
+	<select id="findDispatcherByDispathcerId" parameterType="string" resultType="dispatcher">
+		select * from t_dispatcher where dispatcherId = #{dispatcherId}
+	</select>
+	
+	<select id="countIsOrganizationById" parameterType="string" resultType="int">
+		select count(*) from t_dispatcher where organizationId = #{organizationId}
+	</select> 
+	
+</mapper>

@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yidu.d257.dao.base.ReplaceDao">
+
+	<sql id="replaceSQL">
+		select * from t_replace
+	</sql>
+	
+	<sql id="countReplaceSQL">
+		select count(*) from t_replace
+	</sql>
+	
+	<sql id="pageQeurySQL">
+		order by startTime limit #{start},#{end}
+	</sql>
+	
+	<sql id="criteriasSQL">
+		<if test="startTime!=null and startTime!=''">
+			and startTime>=#{startTime}
+		</if>
+		<if test="endTime!=null and endTime!=''">
+			and endTime&lt;=#{endTime}
+		</if>
+	</sql>
+	
+	<select id="countReplace" resultType="int">
+		select count(*) from t_replace
+	</select>
+	
+	<select id="findAllReplaceWithPage" parameterType="map" resultType="replace">
+		<include refid="replaceSQL"/> 
+		<include refid="pageQeurySQL"/> 
+	</select>
+	
+	<select id="findReplaceByNameWithPage" parameterType="map" resultType="replace">
+		<include refid="replaceSQL"/>  
+		where replaceName like '%${name}%' or replacedName like '%${name}%' 
+		<include refid="pageQeurySQL"/>
+	</select>
+	
+	<select id="countFindReplaceByNameWithPage" parameterType="string" resultType="int">
+		<include refid="countReplaceSQL"/> where replaceName like '%${value}%' or replacedName like '%${value}%' 
+	</select>
+	
+	<insert id="addReplace" parameterType="replace">
+		insert into t_replace(replaceId,replaceManId,replaceName,replacedId,replacedName,startTime,endTime,organizationId,organizationName,useable,description)
+		values(#{replaceId},#{replaceManId},#{replaceName},#{replacedId},#{replacedName},#{startTime},#{endTime},#{organizationId},#{organizationName},#{useable},#{description});
+	</insert>
+	
+	<delete id="deleteReplace" parameterType="string">
+		delete from t_replace where replaceId = #{replaceId}
+	</delete>
+	
+	<update id="freezeOrActivateReplace" parameterType="map">
+		update t_replace set useable = #{useable} where replaceId = #{replaceId}
+	</update>
+	
+	<select id="findReplaceByCriteriaWithPage" parameterType="replaceOV" resultType="replace">
+		<include refid="replaceSQL"/>
+		<where>
+			<include refid="criteriasSQL"/>
+		</where>
+	</select>
+	
+	<select id="countReplaceByCriteriaWithPage" parameterType="replaceOV" resultType="int">
+		<include refid="countReplaceSQL"/>
+		<where>
+			<include refid="criteriasSQL"/>
+		</where>
+	</select>
+</mapper>

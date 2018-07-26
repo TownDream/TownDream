@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xmlns:aop="http://www.springframework.org/schema/aop"
+    xmlns:tx="http://www.springframework.org/schema/tx"
+    
+    xsi:schemaLocation="
+    	http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context.xsd
+        http://www.springframework.org/schema/tx
+        http://www.springframework.org/schema/tx/spring-tx.xsd
+        http://www.springframework.org/schema/aop
+        http://www.springframework.org/schema/aop/spring-aop.xsd">
+    <!-- Spring整合MaBatis 开发配置 -->
+        
+    <!-- 3.配置数据访问对象 -->    
+    <!-- <bean id="userDao" class="org.mybatis.spring.mapper.MapperFactoryBean">
+    	mapperInterface: Dao接口的全限定类名
+    	<property name="mapperInterface" value="com.yidu.demo.dao.UserDao"/>
+    	配置会话工厂对象
+    	<property name="sqlSessionFactory" ref="sqlSessionFactory"></property>
+    </bean> -->
+	    
+	   <!-- 3.2 使用扫描器生成数据访问接口实现类对象 
+	   		注意：这里不指定id属性，Spring会将所扫描包中接口首字母小写作为id,如xxxDao
+	   -->
+	 
+	 <!-- 5.配置事物管理器 -->
+	 <bean id="txManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+	 	<property name="dataSource" ref="dataSource"></property>
+	 </bean>
+	 
+	 <!-- 6.配置事物通知 需要配置事物的隔离级别和事物的传播行为等属性 -->
+	 <tx:advice id="txAdvice" transaction-manager="txManager">
+		<tx:attributes>
+			<!-- 根据不同的业务方法进行不同的事务处理 -->
+			<tx:method name="find*" read-only="true"/>
+			<tx:method name="*"/>
+		</tx:attributes>	 	
+	 </tx:advice>
+			 
+	 <!-- 7.配置事物切面，生成代理对象 -->
+	 <aop:config>
+	 	<aop:pointcut id="txPC" expression="execution(* com.yidu.d257.service..*.*(..))"/>
+	 	<aop:advisor pointcut-ref="txPC" advice-ref="txAdvice"/>
+	 </aop:config>
+	 
+ </beans>

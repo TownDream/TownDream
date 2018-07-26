@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xmlns:aop="http://www.springframework.org/schema/aop"
+    xmlns:tx="http://www.springframework.org/schema/tx"
+    xsi:schemaLocation="
+        http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context.xsd
+        http://www.springframework.org/schema/tx
+        http://www.springframework.org/schema/tx/spring-tx.xsd
+        http://www.springframework.org/schema/aop
+        http://www.springframework.org/schema/aop/spring-aop.xsd">
+     
+    <!-- Spring MyBatis开发配置 -->
+    <!-- 0.读取属性文件 -->
+    <context:property-placeholder location="classpath:database.properties"/>
+    
+	<!-- 1.配置数据源 -->
+	<bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
+			<!-- 数据库连接属性，建议读取数据库属性文件进行配置 -->
+			<property name="user" value="${mysql.logistics.username}" />
+			<property name="password" value="${mysql.logistics.password}" />
+			<property name="driverClass" value="${mysql.driver}" />
+			<property name="jdbcUrl" value="${mysql.url}" />
+			<!--连接池中保留的最小连接数。-->    
+	        <property name="minPoolSize">    
+	            <value>5</value>    
+	        </property>    
+	     
+	 		<!--连接池中保留的最大连接数。Default: 15 -->    
+	        <property name="maxPoolSize">    
+	            <value>30</value>    
+	        </property>    
+	     
+			<!--初始化时获取的连接数，取值应在minPoolSize与maxPoolSize之间。Default: 3 -->    
+	        <property name="initialPoolSize">    
+	            <value>15</value>    
+	        </property>    
+	     
+	 		<!--最大空闲时间,60秒内未使用则连接被丢弃。若为0则永不丢弃。Default: 0 -->    
+	        <property name="maxIdleTime">    
+	            <value>60</value>    
+	        </property>    
+	     
+	 		<!--当连接池中的连接耗尽的时候c3p0一次同时获取的连接数。Default: 3 -->    
+	        <property name="acquireIncrement">    
+	            <value>5</value>    
+	        </property> 
+	        
+	        <!--每60秒检查所有连接池中的空闲连接。Default: 0 -->    
+	        <property name="idleConnectionTestPeriod">    
+	            <value>60</value>    
+	        </property>    
+	</bean>
+	
+	<!-- 2.配置SqlSessionFactory对象 -->
+	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+			<!-- 数据源 -->
+			<property name="dataSource"  ref="dataSource"/>
+			<!-- SqlMapConfig -->
+			<property name="configLocation" value="classpath:config/mybatis/SqlMapConfig.xml" />
+	</bean>
+	
+	<!-- 3.使用扫描器生成数据访问接口实现类对象 注意:这里不需要指定id属性 Spring会将扫描包中首字母小写作为id xxxDao -->
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+			<!-- basePackage要扫描的数据访问接口包 要扫描多个包可用通配符 * 或用 逗号 隔开 -->
+			<property name="basePackage" value="com.yidu.d257.dao" />
+			<!-- 配置会话工厂对象 -->
+			<property name="sqlSessionFactoryBeanName" value="sqlSessionFactory" />
+	</bean>
+	
+</beans>
